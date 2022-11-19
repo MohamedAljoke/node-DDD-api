@@ -1,5 +1,6 @@
 import { InvalidParamError } from '../errors/invalid-param-error';
 import { MissingParamsError } from '../errors/missing-params-error';
+import { ServerError } from '../errors/server-error';
 import { badRequest } from '../helpers/http-helper';
 import { Controller } from '../protoccols/controller';
 import { EmialValidator } from '../protoccols/email-validator';
@@ -22,13 +23,20 @@ export class SignUpController implements Controller {
         return badRequest(new MissingParamsError(field));
       }
     }
-    const isValidEmail = this.emailValidator.isValid(httpRequest.body.email);
-    if (!isValidEmail) {
-      return badRequest(new InvalidParamError('email'));
+    try {
+      const isValidEmail = this.emailValidator.isValid(httpRequest.body.email);
+      if (!isValidEmail) {
+        return badRequest(new InvalidParamError('email'));
+      }
+      return {
+        body: 'a',
+        statusCode: 400,
+      };
+    } catch (e) {
+      return {
+        statusCode: 500,
+        body: new ServerError(),
+      };
     }
-    return {
-      body: 'a',
-      statusCode: 400,
-    };
   }
 }
