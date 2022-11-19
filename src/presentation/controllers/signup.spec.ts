@@ -7,13 +7,26 @@ interface SutTypes {
   emailValidatorStub: EmialValidator;
 }
 
-const makeSut = (): SutTypes => {
+const makeEmailValidator = (): EmialValidator => {
   class EmailValidatorStub implements EmialValidator {
     isValid(email: string): boolean {
       return true;
     }
   }
   const emailValidatorStub = new EmailValidatorStub();
+  return emailValidatorStub;
+};
+const makeEmailValidatorWithError = (): EmialValidator => {
+  class EmailValidatorStub implements EmialValidator {
+    isValid(email: string): boolean {
+      throw new Error();
+    }
+  }
+  const emailValidatorStub = new EmailValidatorStub();
+  return emailValidatorStub;
+};
+const makeSut = (): SutTypes => {
+  const emailValidatorStub = makeEmailValidator();
   const sut = new SignUpController(emailValidatorStub);
   return {
     sut,
@@ -106,12 +119,7 @@ describe('SignUp Controller', () => {
     expect(isValidSpy).toHaveBeenCalledWith('any_email@mail.com');
   });
   test('Should return 500 if emailValidator throws', () => {
-    class EmailValidatorStub implements EmialValidator {
-      isValid(email: string): boolean {
-        throw new Error();
-      }
-    }
-    const emailValidatorStub = new EmailValidatorStub();
+    const emailValidatorStub = makeEmailValidatorWithError();
     const sut = new SignUpController(emailValidatorStub);
     const httpRequest = {
       body: {
