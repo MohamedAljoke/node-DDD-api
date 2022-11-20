@@ -1,17 +1,20 @@
 import { Encrypter } from '../../protocols/encrypter';
 import { DbAddAccount } from './db-add-account';
 
-class EncrypterStub {
-  async encrypt(value: string): Promise<string> {
-    return new Promise((resolve) => resolve('hashed_password'));
+const makeEncrypter = (): Encrypter => {
+  class EncrypterStub implements Encrypter {
+    async encrypt(value: string): Promise<string> {
+      return new Promise((resolve) => resolve('hashed_password'));
+    }
   }
-}
+  return new EncrypterStub();
+};
 interface SutTypes {
   sut: DbAddAccount;
   encrypterStub: Encrypter;
 }
 const makeSut = (): SutTypes => {
-  const encrypterStub = new EncrypterStub();
+  const encrypterStub = makeEncrypter();
   const sut = new DbAddAccount(encrypterStub);
   return {
     sut,
@@ -29,5 +32,20 @@ describe('DbAddAccount UseCase', () => {
     };
     await sut.add(accountData);
     expect(encryptSpy).toHaveBeenCalledWith(accountData.password);
+  });
+  test('Should throw if Encrypter throws', async () => {
+    const { sut, encrypterStub } = makeSut();
+    jest
+      .spyOn(encrypterStub, 'encrypt')
+      .mockReturnValueOnce(
+        new Promise((resolve, reject) => reject(new Error()))
+      );
+    const accountData = {
+      name: 'valid_name',
+      email: 'valid_email',
+      password: 'valid_password',
+    };
+    const promiseAccount = sut.add(accountData);
+    await expect(promiseAccount).rejects.toThrow();
   });
 });
