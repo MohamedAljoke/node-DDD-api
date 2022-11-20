@@ -1,5 +1,5 @@
 import { InvalidParamError, MissingParamsError } from '../../errors';
-import { badRequest, serverError } from '../../helpers/http-helper';
+import { badRequest, created, serverError } from '../../helpers/http-helper';
 import {
   Controller,
   EmialValidator,
@@ -39,11 +39,9 @@ export class SignUpController implements Controller {
       }
       //add acount
       const newAccount = this.addAccount.add({ name, email, password });
-      console.log('aaa', newAccount);
-      return {
-        body: newAccount,
-        statusCode: 201,
-      };
+      const response = created(newAccount);
+
+      return response;
     } catch (e) {
       return serverError();
     }
