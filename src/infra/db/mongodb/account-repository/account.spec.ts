@@ -2,9 +2,12 @@ require('dotenv').config();
 import { MongoClient } from 'mongodb';
 import { MongoHelper } from '../helpers/mongo-helper';
 import { AccountMongoRepository } from './account';
+
 describe('Account Mongo Repository', () => {
   let client: MongoClient;
-
+  const makeSut = () => {
+    return new AccountMongoRepository();
+  };
   beforeAll(async () => {
     console.log(process.env.MONGO_URL);
     const mongoClient = await MongoHelper.connect(process.env.MONGO_URL!);
@@ -13,7 +16,7 @@ describe('Account Mongo Repository', () => {
     await MongoHelper.desconnect();
   });
   test('Should return an account on success', async () => {
-    const sut = new AccountMongoRepository();
+    const sut = makeSut();
     const account = await sut.add({
       name: 'any_name',
       email: 'any_email@email.com',
