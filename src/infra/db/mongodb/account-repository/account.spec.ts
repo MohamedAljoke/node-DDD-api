@@ -4,7 +4,6 @@ import { MongoHelper } from '../helpers/mongo-helper';
 import { AccountMongoRepository } from './account';
 
 describe('Account Mongo Repository', () => {
-  let client: MongoClient;
   const makeSut = () => {
     return new AccountMongoRepository();
   };
