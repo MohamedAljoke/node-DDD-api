@@ -1,3 +1,10 @@
+import { MongoHelper } from '../infra/db/mongodb/helpers/mongo-helper';
+import env from './config/env';
 import app from './config/app';
 
-app.listen(process.env.PORT || 800, () => console.log('Server is on'));
+MongoHelper.connect(env.mongoUrl)
+  .then(() => {
+    console.log('Mongodb is on');
+    app.listen(env.port, () => console.log('Server is on'));
+  })
+  .catch(console.error);
