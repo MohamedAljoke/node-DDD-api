@@ -4,7 +4,6 @@ import app from '../config/app';
 
 describe('SignUp Routes', () => {
   beforeAll(async () => {
-    console.log(process.env.MONGO_URL);
     const mongoClient = await MongoHelper.connect(process.env.MONGO_URL!);
   });
   beforeEach(async () => {
@@ -21,9 +20,6 @@ describe('SignUp Routes', () => {
       password: '123123',
       passwordConfirmation: '123123',
     };
-    await request(app)
-      .post('/api/v1/signup')
-      .send({ data: 'teste-data' })
-      .expect(200);
+    await request(app).post('/api/v1/signup').send(data).expect(201);
   });
 });

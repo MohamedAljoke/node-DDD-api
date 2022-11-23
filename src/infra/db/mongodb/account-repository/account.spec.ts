@@ -8,7 +8,6 @@ describe('Account Mongo Repository', () => {
     return new AccountMongoRepository();
   };
   beforeAll(async () => {
-    console.log(process.env.MONGO_URL);
     const mongoClient = await MongoHelper.connect(process.env.MONGO_URL!);
   });
   beforeEach(async () => {
