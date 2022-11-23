@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "sucrase-node src/main/server.ts",
-    "test:dev": "jest --passWithNoTests",
+    "test:dev": "jest --passWithNoTests --detectOpenHandles",
     "test": "jest --passWithNoTests --silent --noStackTrace --runInBand",
     "test:unit": "npm test -- --watch -c jest-unit-config.js",
     "test:integration": "npm test -- --watch -c jest-integration-config.js",
