@@ -1,17 +1,30 @@
-import { MissingParamsError } from '../../errors';
+import { InvalidParamError, MissingParamsError } from '../../errors';
+import { EmailValidator } from '../signup/signup-protocols';
 import { SignInController } from './login';
 
 interface SutTypes {
   sut: SignInController;
+  emailValidator: EmailValidator;
 }
 
-describe('LoginController', () => {
-  const makeSut = (): SutTypes => {
-    const sut = new SignInController();
-    return {
-      sut,
-    };
+const makeEmailValidator = (): EmailValidator => {
+  class EmailValidatorStub implements EmailValidator {
+    isValid(email: string): boolean {
+      return true;
+    }
+  }
+  const emailValidatorStub = new EmailValidatorStub();
+  return emailValidatorStub;
+};
+const makeSut = (): SutTypes => {
+  const emailValidator = makeEmailValidator();
+  const sut = new SignInController(emailValidator);
+  return {
+    sut,
+    emailValidator,
   };
+};
+describe('LoginController', () => {
   test('Should return 400 if no email is provided ', async () => {
     const httpRequest = {
       body: {
@@ -33,5 +46,30 @@ describe('LoginController', () => {
     const httpResponse = await sut.handle(httpRequest);
     expect(httpResponse.statusCode).toBe(400);
     expect(httpResponse.body).toEqual(new MissingParamsError('password'));
+  });
+  test('Should return 400 if invalid email is provided', async () => {
+    const { sut, emailValidator } = makeSut();
+    jest.spyOn(emailValidator, 'isValid').mockReturnValueOnce(false);
+    const httpRequest = {
+      body: {
+        email: 'valid_email@mail.com',
+        password: 'random_password',
+      },
+    };
+    const httpResponse = await sut.handle(httpRequest);
+    expect(httpResponse.statusCode).toBe(400);
+    expect(httpResponse.body).toEqual(new InvalidParamError('email'));
+  });
+  test('Should call email validator with correct email', async () => {
+    const { sut, emailValidator } = makeSut();
+    const isValidEmailSpy = jest.spyOn(emailValidator, 'isValid');
+    const httpRequest = {
+      body: {
+        email: 'valid_email@mail.com',
+        password: 'random_password',
+      },
+    };
+    const httpResponse = await sut.handle(httpRequest);
+    expect(isValidEmailSpy).toHaveBeenCalledWith('valid_email@mail.com');
   });
 });

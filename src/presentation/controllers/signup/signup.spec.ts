@@ -7,19 +7,19 @@ import {
 } from '../../errors';
 import { SignUpController } from './signup';
 import {
-  EmialValidator,
+  EmailValidator,
   AddAccount,
   AddAccountModel,
 } from './signup-protocols';
 
 interface SutTypes {
   sut: SignUpController;
-  emailValidatorStub: EmialValidator;
+  emailValidatorStub: EmailValidator;
   addAccountStub: AddAccount;
 }
 
-const makeEmailValidator = (): EmialValidator => {
-  class EmailValidatorStub implements EmialValidator {
+const makeEmailValidator = (): EmailValidator => {
+  class EmailValidatorStub implements EmailValidator {
     isValid(email: string): boolean {
       return true;
     }
