@@ -2,16 +2,16 @@ import { InvalidParamError, MissingParamsError } from '../../errors';
 import { badRequest, created, serverError } from '../../helpers/http-helper';
 import {
   Controller,
-  EmialValidator,
+  EmailValidator,
   HttpRequest,
   HttpResponse,
   AddAccount,
 } from './signup-protocols';
 
 export class SignUpController implements Controller {
-  private readonly emailValidator: EmialValidator;
+  private readonly emailValidator: EmailValidator;
   private readonly addAccount: AddAccount;
-  constructor(emailValidator: EmialValidator, addAccount: AddAccount) {
+  constructor(emailValidator: EmailValidator, addAccount: AddAccount) {
     this.emailValidator = emailValidator;
     this.addAccount = addAccount;
   }
