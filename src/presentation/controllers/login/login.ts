@@ -2,6 +2,7 @@ import { Authentication } from '../../../domain/usecases/authentication';
 import { InvalidParamError, MissingParamsError } from '../../errors';
 import {
   badRequest,
+  ok,
   serverError,
   unauthorizedRequest,
 } from '../../helpers/http-helper';
@@ -36,7 +37,7 @@ export class SignInController implements Controller {
       if (!accessToken) {
         return unauthorizedRequest();
       }
-      return new Promise((resolve) => resolve({ statusCode: 200, body: {} }));
+      return ok({ accessToken });
     } catch (e) {
       return serverError();
     }
