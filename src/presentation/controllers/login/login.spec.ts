@@ -135,9 +135,11 @@ describe('LoginController', () => {
   });
   test('Should throw if authentication  throws', async () => {
     const { sut, authenticationStub } = makeSut();
-    jest.spyOn(authenticationStub, 'auth').mockImplementationOnce(() => {
-      throw new Error();
-    });
+    jest.spyOn(authenticationStub, 'auth').mockRejectedValueOnce(
+      new Promise((resolve, reject) => {
+        reject(new Error());
+      })
+    );
     const httpRequest = {
       body: {
         email: 'valid_email@mail.com',
