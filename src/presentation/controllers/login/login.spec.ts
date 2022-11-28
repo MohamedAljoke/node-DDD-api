@@ -4,6 +4,7 @@ import {
   MissingParamsError,
   ServerError,
 } from '../../errors';
+import { unauthorizedRequest } from '../../helpers/http-helper';
 import { EmailValidator } from '../signup/signup-protocols';
 import { SignInController } from './login';
 
@@ -117,5 +118,19 @@ describe('LoginController', () => {
       'valid_email@mail.com',
       'valid_password'
     );
+  });
+  test('Should return 401 if invalid credentials are provided', async () => {
+    const { sut, authenticationStub } = makeSut();
+    jest
+      .spyOn(authenticationStub, 'auth')
+      .mockReturnValueOnce(new Promise((resolve) => resolve('')));
+    const httpRequest = {
+      body: {
+        email: 'valid_email@mail.com',
+        password: 'valid_password',
+      },
+    };
+    const httpResponse = await sut.handle(httpRequest);
+    expect(httpResponse).toEqual(unauthorizedRequest());
   });
 });
