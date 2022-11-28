@@ -1,6 +1,10 @@
 import { Authentication } from '../../../domain/usecases/authentication';
 import { InvalidParamError, MissingParamsError } from '../../errors';
-import { badRequest, serverError } from '../../helpers/http-helper';
+import {
+  badRequest,
+  serverError,
+  unauthorizedRequest,
+} from '../../helpers/http-helper';
 import { Controller, HttpRequest, HttpResponse } from '../../protoccols';
 import { EmailValidator } from '../signup/signup-protocols';
 
@@ -24,7 +28,10 @@ export class SignInController implements Controller {
       if (!isValidEmail) {
         return badRequest(new InvalidParamError('email'));
       }
-      this.authentication.auth(email, password);
+      const accessToken = await this.authentication.auth(email, password);
+      if (!accessToken) {
+        return unauthorizedRequest();
+      }
       return new Promise((resolve) => resolve({ statusCode: 200, body: {} }));
     } catch (e) {
       return serverError();
