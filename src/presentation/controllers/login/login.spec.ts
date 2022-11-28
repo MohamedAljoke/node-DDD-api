@@ -4,7 +4,11 @@ import {
   MissingParamsError,
   ServerError,
 } from '../../errors';
-import { unauthorizedRequest } from '../../helpers/http-helper';
+import {
+  ok,
+  serverError,
+  unauthorizedRequest,
+} from '../../helpers/http-helper';
 import { SignInController } from './login';
 import { EmailValidator } from './login-protocols';
 
@@ -135,9 +139,9 @@ describe('LoginController', () => {
   });
   test('Should throw if authentication  throws', async () => {
     const { sut, authenticationStub } = makeSut();
-    jest.spyOn(authenticationStub, 'auth').mockRejectedValueOnce(
+    jest.spyOn(authenticationStub, 'auth').mockReturnValueOnce(
       new Promise((resolve, reject) => {
-        reject(new Error());
+        reject(serverError());
       })
     );
     const httpRequest = {
@@ -149,5 +153,16 @@ describe('LoginController', () => {
     const httpResponse = await sut.handle(httpRequest);
     expect(httpResponse.statusCode).toBe(500);
     expect(httpResponse.body).toEqual(new ServerError());
+  });
+  test('Should return 200 if valid credentials are provided', async () => {
+    const { sut } = makeSut();
+    const httpRequest = {
+      body: {
+        email: 'valid_email@mail.com',
+        password: 'valid_password',
+      },
+    };
+    const httpResponse = await sut.handle(httpRequest);
+    expect(httpResponse).toEqual(ok({ accessToken: 'any_token' }));
   });
 });
