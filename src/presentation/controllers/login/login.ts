@@ -5,8 +5,12 @@ import {
   serverError,
   unauthorizedRequest,
 } from '../../helpers/http-helper';
-import { Controller, HttpRequest, HttpResponse } from '../../protoccols';
-import { EmailValidator } from '../signup/signup-protocols';
+import {
+  Controller,
+  EmailValidator,
+  HttpRequest,
+  HttpResponse,
+} from './login-protocols';
 
 export class SignInController implements Controller {
   private readonly emailValidator: EmailValidator;

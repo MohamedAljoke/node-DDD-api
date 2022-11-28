@@ -5,8 +5,8 @@ import {
   ServerError,
 } from '../../errors';
 import { unauthorizedRequest } from '../../helpers/http-helper';
-import { EmailValidator } from '../signup/signup-protocols';
 import { SignInController } from './login';
+import { EmailValidator } from './login-protocols';
 
 interface SutTypes {
   sut: SignInController;
